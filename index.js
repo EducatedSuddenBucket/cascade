@@ -19,7 +19,8 @@ const loadCommands = (commandsPath) => {
             client.commands.set(command.data.name, command);
             // Add integration_types to the command data
             const commandData = command.data.toJSON();
-            commandData.integration_types = [0, 1];  // or [1] or [0] depending on your needs
+            commandData.integration_types = [0, 1];
+            commandData.contexts = [0, 1]// or [1] or [0] depending on your needs
             commands.push(commandData);
         } else {
             console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
