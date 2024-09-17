@@ -1,34 +1,23 @@
-const { InteractionResponseType, MessageFlags, ComponentType, ApplicationIntegrationType, InteractionContextType } = require('discord-api-types/payloads');
+const { SlashCommandBuilder } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
-    data: {
-        name: 'ping',
-        description: 'Responds with Pong!',
-        contexts: {
-            installation: [
-                ApplicationIntegrationType.GuildInstall,
-                ApplicationIntegrationType.UserInstall,
-            ],
-            interaction: [
-                InteractionContextType.Guild,
-                InteractionContextType.BotDM,
-                InteractionContextType.PrivateChannel,
-            ],
-        },
-    },
+    data: new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription('Replies with the bot and API ping.'),
     async execute(interaction) {
-        const embed = {
-            title: 'Ping Command',
-            description: 'Pong!',
-            color: 0x00FF00,
-        };
+        const botPing = interaction.client.ws.ping; // Bot's WebSocket ping
+        const apiPing = Date.now() - interaction.createdTimestamp; // API ping
 
-        await interaction.reply({
-            type: InteractionResponseType.ChannelMessageWithSource,
-            data: {
-                embeds: [embed],
-                flags: MessageFlags.Ephemeral,
-            },
-        });
+        const embed = new EmbedBuilder()
+            .setColor('#0099ff') // Cool blue color
+            .setTitle('Ping Information')
+            .addFields(
+                { name: 'Bot', value: `${botPing}ms`, inline: true },
+                { name: 'API', value: `${apiPing}ms`, inline: true }
+            )
+            .setTimestamp();
+
+        await interaction.reply({ embeds: [embed] });
     },
 };
