@@ -8,7 +8,7 @@ module.exports = {
         .setDescription('Replies with a random fact.'),
     async execute(interaction) {
         try {
-            const response = await axios.get('https://uselessfacts.jsph.pl/random.json?language=en');
+            const response = await axios.get('https://uselessfacts.jsph.pl/api/v2/facts/random');
             const fact = response.data.text; // Extract fact from API response
 
             const embed = new EmbedBuilder()
