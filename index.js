@@ -8,46 +8,71 @@ const prefix = '>';  // Set your prefix
 
 client.commands = new Collection();
 
-const commands = [];
+const userCommands = [];
+const guildCommands = [];
+const globalCommands = [];
 
-const loadCommands = (commandsPath) => {
+const loadCommands = (commandsPath, type) => {
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
-            // Add integration_types to the command data
+            // Add integration_types and contexts based on the folder
             const commandData = command.data.toJSON();
-            commandData.integration_types = [0, 1];
-            commandData.contexts = [0, 1];// or [1] or [0] depending on your needs
-            commands.push(commandData);
+            
+            switch (type) {
+                case 'user':
+                    commandData.integration_types = [1];  // USER_INSTALL
+                    commandData.contexts = [1, 2];        // BOT_DM, PRIVATE_CHANNEL
+                    userCommands.push(commandData);
+                    break;
+                case 'guild':
+                    commandData.integration_types = [0];  // GUILD_INSTALL
+                    commandData.contexts = [0];           // GUILD
+                    guildCommands.push(commandData);
+                    break;
+                case 'global':
+                    commandData.integration_types = [0, 1];  // GUILD_INSTALL and USER_INSTALL
+                    commandData.contexts = [0, 1, 2];        // GUILD, BOT_DM, PRIVATE_CHANNEL
+                    globalCommands.push(commandData);
+                    break;
+                default:
+                    console.log(`[WARNING] Unknown command type for ${filePath}`);
+            }
         } else {
             console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
         }
     }
 };
 
-// Load commands from both the commands folder and subfolders
-const foldersPath = path.join(__dirname, 'commands');
-loadCommands(foldersPath);
-
-const commandFolders = fs.readdirSync(foldersPath).filter(file => fs.statSync(path.join(foldersPath, file)).isDirectory());
-for (const folder of commandFolders) {
-    const commandsPath = path.join(foldersPath, folder);
-    loadCommands(commandsPath);
-}
+// Load commands from specific directories
+const commandsPath = path.join(__dirname, 'commands');
+loadCommands(path.join(commandsPath, 'user'), 'user');
+loadCommands(path.join(commandsPath, 'guild'), 'guild');
+loadCommands(path.join(commandsPath, 'global'), 'global');
 
 const rest = new REST({ version: '10' }).setToken(token);
 
 (async () => {
     try {
-        console.log(`Started refreshing ${commands.length} application (/) commands globally.`);
-        const data = await rest.put(
+        // Register global commands
+        console.log(`Started refreshing ${globalCommands.length} global application (/) commands.`);
+        const globalData = await rest.put(
             Routes.applicationCommands(clientId),
-            { body: commands },
+            { body: globalCommands },
         );
-        console.log(`Successfully reloaded ${data.length} application (/) commands globally.`);
+        console.log(`Successfully reloaded ${globalData.length} global application (/) commands.`);
+
+        // Register user-specific commands (installed per user)
+        console.log(`Started refreshing ${userCommands.length} user-specific (/) commands.`);
+        const userData = await rest.put(
+            Routes.applicationCommands(clientId),
+            { body: userCommands },
+        );
+        console.log(`Successfully reloaded ${userData.length} user-specific (/) commands.`);
+
     } catch (error) {
         console.error(error);
     }
@@ -74,12 +99,12 @@ client.on(Events.InteractionCreate, async interaction => {
 
 client.on(Events.GuildCreate, async guild => {
     try {
-        console.log(`Registering commands for guild ${guild.id}.`);
+        console.log(`Registering guild-specific commands for guild ${guild.id}.`);
         await rest.put(
             Routes.applicationGuildCommands(clientId, guild.id),
-            { body: commands },
+            { body: guildCommands },
         );
-        console.log(`Successfully registered commands for guild ${guild.id}.`);
+        console.log(`Successfully registered guild-specific commands for guild ${guild.id}.`);
     } catch (error) {
         console.error(error);
     }
