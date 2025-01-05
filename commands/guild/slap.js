@@ -1,14 +1,15 @@
+const { SlashCommandBuilder } = require('discord.js');
+
 module.exports = {
-    name: 'slap',
-    description: 'Sends a playful slap to a user!',
-    options: [
-        {
-            name: 'user',
-            type: 6,
-            description: 'The user to slap',
-            required: true,
-        },
-    ],
+    data: new SlashCommandBuilder()
+        .setName('slap')
+        .setDescription('Sends a playful slap to a user!')
+        .addUserOption(option =>
+            option
+                .setName('user')
+                .setDescription('The user to slap')
+                .setRequired(true)
+        ),
     async execute(interaction) {
         const user = interaction.options.getUser('user');
         await interaction.deferReply();
