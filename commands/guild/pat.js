@@ -1,14 +1,15 @@
+const { SlashCommandBuilder } = require('discord.js');
+
 module.exports = {
-    name: 'pat',
-    description: 'Sends a virtual pat to a user!',
-    options: [
-        {
-            name: 'user',
-            type: 6,
-            description: 'The user to pat',
-            required: true,
-        },
-    ],
+    data: new SlashCommandBuilder()
+        .setName('pat')
+        .setDescription('Sends a virtual pat to a user!')
+        .addUserOption(option =>
+            option
+                .setName('user')
+                .setDescription('The user to pat')
+                .setRequired(true)
+        ),
     async execute(interaction) {
         const user = interaction.options.getUser('user');
         await interaction.deferReply();
