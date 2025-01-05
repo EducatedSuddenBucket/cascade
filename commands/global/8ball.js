@@ -1,14 +1,15 @@
+const { SlashCommandBuilder } = require('discord.js');
+
 module.exports = {
-    name: '8ball',
-    description: 'Replies with a random 8ball response!',
-    options: [
-        {
-            name: 'question',
-            type: 3,
-            description: 'The question to ask the 8ball',
-            required: true,
-        },
-    ],
+    data: new SlashCommandBuilder()
+        .setName('8ball')
+        .setDescription('Replies with a random 8ball response!')
+        .addStringOption(option =>
+            option
+                .setName('question')
+                .setDescription('The question to ask the 8ball')
+                .setRequired(true)
+        ),
     async execute(interaction) {
         const question = interaction.options.getString('question');
         await interaction.deferReply();
