@@ -4,7 +4,7 @@ const axios = require('axios'); // Ensure axios is installed
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('randomfact')
+        .setName('fact')
         .setDescription('Replies with a random fact.'),
     async execute(interaction) {
         try {
