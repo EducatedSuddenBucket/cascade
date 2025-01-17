@@ -3,6 +3,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('roles')
+        .setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
         .setDescription('Lists all roles in the server with their hex color code.'),
 
     async execute(interaction) {
