@@ -1,9 +1,9 @@
-const { SlashCommandBuilder, EmbedBuilder, IntegrationType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ApplicationIntegrationType } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('server')
-        .setIntegrationTypes([IntegrationType.GuildInstall])
+        .setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
         .setDescription('Displays information about the server.'),
     async execute(interaction) {
         const { guild } = interaction;
