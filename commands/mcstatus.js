@@ -10,7 +10,7 @@ module.exports = {
                 .setDescription('Server IP address')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('type')
+            option.setName('edition')
                 .setDescription('Server type (java/bedrock)')
                 .setRequired(true)
                 .addChoices(
@@ -22,7 +22,7 @@ module.exports = {
         await interaction.deferReply();
         
         const serverIp = interaction.options.getString('ip');
-        const serverType = interaction.options.getString('type');
+        const serverType = interaction.options.getString('edition');
         
         try {
             if (serverType === 'java') {
