@@ -71,23 +71,28 @@ module.exports = {
                     throw new Error(status.error);
                 }
 
+                // Convert any numbers to strings to avoid potential issues
+                const formatValue = (value) => value?.toString() || 'N/A';
+
                 const embed = new EmbedBuilder()
                     .setTitle(`${serverIp} - Bedrock Server Status`)
                     .setColor('#00ff00')
                     .setTimestamp()
                     .addFields(
-                        { name: 'MOTD', value: status.motd, inline: false },
-                        { name: 'Version', value: status.version, inline: true },
-                        { name: 'Protocol', value: status.protocol, inline: true },
-                        { name: 'Players', value: `${status.playersOnline}/${status.playersMax}`, inline: true },
-                        { name: 'Gamemode', value: status.gamemode, inline: true },
-                        { name: 'Level Name', value: status.levelName, inline: true },
-                        { name: 'Latency', value: `${status.latency}ms`, inline: true }
+                        { name: 'MOTD', value: status.motd || 'No MOTD', inline: false },
+                        { name: 'Version', value: formatValue(status.version), inline: true },
+                        { name: 'Protocol', value: formatValue(status.protocol), inline: true },
+                        { name: 'Players', value: `${formatValue(status.playersOnline)}/${formatValue(status.playersMax)}`, inline: true },
+                        { name: 'Gamemode', value: formatValue(status.gamemode), inline: true },
+                        { name: 'Level Name', value: formatValue(status.levelName), inline: true },
+                        { name: 'Latency', value: `${formatValue(status.latency)}ms`, inline: true }
                     );
 
                 await interaction.editReply({ embeds: [embed] });
             }
         } catch (error) {
+            console.error('Error details:', error); // For debugging
+
             const errorMessages = {
                 'timeout': 'Server request timed out',
                 'domain_not_found': 'Server domain not found',
@@ -99,7 +104,7 @@ module.exports = {
 
             const errorEmbed = new EmbedBuilder()
                 .setTitle('Error')
-                .setDescription(errorMessages[error.message] || 'An unknown error occurred')
+                .setDescription(errorMessages[error.message] || `An error occurred: ${error.message}`)
                 .setColor('#ff0000')
                 .setTimestamp();
 
