@@ -1,32 +1,29 @@
-const { SlashCommandBuilder, EmbedBuilder, ApplicationIntegrationType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('roles')
-        .setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
-        .setDescription('Lists all roles in the server with their hex color code.'),
-
+        .setDescription('Lists all roles in the server with their colors'),
     async execute(interaction) {
-        const { guild } = interaction;
-        const roles = guild.roles.cache.sort((a, b) => b.position - a.position);
-
-        const rolesEmbed = new EmbedBuilder()
-            .setColor(0x0099ff)
-            .setTitle(`Roles in ${guild.name}`)
-            .setThumbnail(guild.iconURL({ dynamic: true }));
-
-        let roleFields = [];
-        roles.forEach(role => {
-            roleFields.push({
-                name: role.name,
-                value: `ID: ${role.id} | Color: ${role.hexColor} | Members: ${role.members.size}`,
-                inline: false
-            });
-        });
-
-        rolesEmbed.addFields(roleFields);
-
         await interaction.deferReply();
-        await interaction.editReply({ embeds: [rolesEmbed] });
+        
+        // Get all roles from the server excluding @everyone
+        const roles = interaction.guild.roles.cache
+            .filter(role => role.name !== '@everyone')
+            .sort((a, b) => b.position - a.position); // Sort by position (highest first)
+        
+        // Create description with all roles
+        const roleList = roles.map(role => 
+            `**${role.name}** - #${role.hexColor.toUpperCase()}`
+        ).join('\n');
+
+        const embed = new EmbedBuilder()
+            .setTitle('Server Roles')
+            .setDescription(roleList)
+            .setColor('#0099ff')
+            .setTimestamp()
+            .setFooter({ text: `Total roles: ${roles.size}` });
+
+        await interaction.editReply({ embeds: [embed] });
     },
 };
