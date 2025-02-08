@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -27,11 +27,11 @@ module.exports = {
         try {
             if (serverType === 'java') {
                 const [statusResponse, iconResponse] = await Promise.all([
-                    fetch(`https://heatblock.esb.is-a.dev/api/status/${serverIp}`),
-                    fetch(`https://heatblock.esb.is-a.dev/api/png/${serverIp}`)
+                    axios.get(`https://heatblock.esb.is-a.dev/api/status/${serverIp}`),
+                    axios.get(`https://heatblock.esb.is-a.dev/api/png/${serverIp}`, { responseType: 'arraybuffer' })
                 ]);
 
-                const status = await statusResponse.json();
+                const status = statusResponse.data;
 
                 if (status.error) {
                     throw new Error(status.error);
@@ -42,7 +42,7 @@ module.exports = {
                     .setColor('#00ff00')
                     .setTimestamp();
 
-                if (iconResponse.ok) {
+                if (iconResponse.status === 200) {
                     embed.setThumbnail(`https://heatblock.esb.is-a.dev/api/png/${serverIp}`);
                 }
 
@@ -55,23 +55,19 @@ module.exports = {
                 );
 
                 if (status.players.list && status.players.list.length > 0) {
-                    const playerList = status.players.list
-                        .map(player => player.name)
-                        .join(', ');
+                    const playerList = status.players.list.map(player => player.name).join(', ');
                     embed.addFields({ name: 'Online Players', value: playerList });
                 }
 
                 await interaction.editReply({ embeds: [embed] });
-
             } else if (serverType === 'bedrock') {
-                const response = await fetch(`https://heatblock.esb.is-a.dev/api/status/bedrock/${serverIp}`);
-                const status = await response.json();
+                const response = await axios.get(`https://heatblock.esb.is-a.dev/api/status/bedrock/${serverIp}`);
+                const status = response.data;
 
                 if (status.error) {
                     throw new Error(status.error);
                 }
 
-                // Convert any numbers to strings to avoid potential issues
                 const formatValue = (value) => value?.toString() || 'N/A';
 
                 const embed = new EmbedBuilder()
@@ -91,7 +87,7 @@ module.exports = {
                 await interaction.editReply({ embeds: [embed] });
             }
         } catch (error) {
-            console.error('Error details:', error); // For debugging
+            console.error('Error details:', error);
 
             const errorMessages = {
                 'timeout': 'Server request timed out',
