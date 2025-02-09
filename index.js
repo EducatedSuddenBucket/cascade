@@ -67,7 +67,9 @@ client.login(token);
 
 /* --- Express Web Server --- */
 const app = express();
-app.use('/icon.png', express.static('./icon.png'));
+app.get('/icon.png', (req, res) => {
+    res.sendFile(path.join(__dirname, 'icon.png'));
+});
 app.get('/', (req, res) => {
   // Build table rows dynamically using the commands stored in client.commands
   let rows = '';
