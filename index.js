@@ -67,7 +67,7 @@ client.login(token);
 
 /* --- Express Web Server --- */
 const app = express();
-
+app.use('/icon.png', express.static('icon.png'));
 app.get('/', (req, res) => {
   // Build table rows dynamically using the commands stored in client.commands
   let rows = '';
@@ -112,6 +112,17 @@ app.get('/', (req, res) => {
       padding: 4rem 2rem;
       text-align: center;
       margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .avatar {
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      border: 4px solid #3B82F6;
+      margin-bottom: 1rem;
     }
     .hero h1 {
       font-size: 3rem;
@@ -121,6 +132,19 @@ app.get('/', (req, res) => {
     .hero p {
       font-size: 1.2rem;
       color: #ffffff;
+      margin-bottom: 1.5rem;
+    }
+    .invite-button {
+      background: #3B82F6;
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+    .invite-button:hover {
+      background: #2563EB;
     }
     .container {
       max-width: 1200px;
@@ -155,12 +179,19 @@ app.get('/', (req, res) => {
       color: #10B981;
     }
   </style>
-  <title>Cascade Commands</title>
+  <title>Cascade</title>
+    <link rel="icon" href="/icon.png" type="image/png">
+  <meta property="og:title" content="Cascade - A random Discord Bot">
+  <meta property="og:description" content="Cascade is a Discord Bot">
+  <meta property="og:image" content="/icon.png">
+  <meta property="og:url" content="https://cascade.esb.is-a.dev">
 </head>
 <body>
   <div class="hero">
-    <h1>Cascade</h1> 
-    <p>A random Discord Bot</p> 
+    <img src="/icon.png" alt="Cascade Bot" class="avatar">
+    <h1>Cascade</h1>
+    <p>A random Discord Bot</p>
+    <a href="https://discord.com/oauth2/authorize?client_id=1283690429593813002" class="invite-button">Invite/Install</a>
   </div>
   <div class="container">
     <table>
