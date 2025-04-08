@@ -192,7 +192,7 @@ app.get('/', (req, res) => {
   <div class="hero">
     <img src="/icon.png" alt="Cascade Bot" class="avatar">
     <h1>Cascade</h1>
-    <p>A random Discord Bot</p>
+    <p>Cascade - A Discord bot that makes your server more engaged and fun.</p>
     <a href="https://discord.com/oauth2/authorize?client_id=1283690429593813002" class="invite-button">Invite/Install</a>
   </div>
   <div class="container">
