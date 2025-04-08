@@ -26,32 +26,25 @@ module.exports = {
         
         try {
             if (serverType === 'java') {
-                const [statusResponse, iconResponse] = await Promise.all([
-                    axios.get(`https://heatblock.esb.is-a.dev/api/status/${serverIp}`),
-                    axios.get(`https://heatblock.esb.is-a.dev/api/png/${serverIp}`, { responseType: 'arraybuffer' })
-                ]);
+                const response = await axios.get(`https://heatblock.esb.is-a.dev/api/status/${serverIp}`);
+                const status = response.data;
 
-                const status = statusResponse.data;
-
-                if (status.error) {
-                    throw new Error(status.error);
+                if (!status.success) {
+                    throw new Error(status.error.message || status.error.code);
                 }
 
                 const embed = new EmbedBuilder()
                     .setTitle(`${serverIp} - Java Server Status`)
                     .setColor('#00ff00')
+                    .setThumbnail(`https://heatblock.esb.is-a.dev/api/png/${serverIp}`)
                     .setTimestamp();
-
-                if (iconResponse.status === 200) {
-                    embed.setThumbnail(`https://heatblock.esb.is-a.dev/api/png/${serverIp}`);
-                }
 
                 embed.addFields(
                     { name: 'Version', value: status.version.name, inline: true },
                     { name: 'Protocol', value: status.version.protocol.toString(), inline: true },
                     { name: 'Players', value: `${status.players.online}/${status.players.max}`, inline: true },
                     { name: 'Latency', value: `${status.latency}ms`, inline: true },
-                    { name: 'MOTD', value: status.description || 'No description', inline: false }
+                    { name: 'MOTD', value: status.description_clean || status.description || 'No description', inline: false }
                 );
 
                 if (status.players.list && status.players.list.length > 0) {
@@ -64,8 +57,8 @@ module.exports = {
                 const response = await axios.get(`https://heatblock.esb.is-a.dev/api/status/bedrock/${serverIp}`);
                 const status = response.data;
 
-                if (status.error) {
-                    throw new Error(status.error);
+                if (!status.success) {
+                    throw new Error(status.error.message || status.error.code);
                 }
 
                 const formatValue = (value) => value?.toString() || 'N/A';
@@ -75,7 +68,7 @@ module.exports = {
                     .setColor('#00ff00')
                     .setTimestamp()
                     .addFields(
-                        { name: 'MOTD', value: status.motd || 'No MOTD', inline: false },
+                        { name: 'MOTD', value: status.motd_clean || status.motd || 'No MOTD', inline: false },
                         { name: 'Version', value: formatValue(status.version), inline: true },
                         { name: 'Protocol', value: formatValue(status.protocol), inline: true },
                         { name: 'Players', value: `${formatValue(status.playersOnline)}/${formatValue(status.playersMax)}`, inline: true },
@@ -89,18 +82,9 @@ module.exports = {
         } catch (error) {
             console.error('Error details:', error);
 
-            const errorMessages = {
-                'timeout': 'Server request timed out',
-                'domain_not_found': 'Server domain not found',
-                'offline': 'Server is offline',
-                'no_favicon': 'Server has no icon',
-                'invalid_favicon': 'Server has an invalid icon',
-                'cant_fetch_favicon': 'Could not fetch server icon'
-            };
-
             const errorEmbed = new EmbedBuilder()
-                .setTitle('Error')
-                .setDescription(errorMessages[error.message] || `An error occurred: ${error.message}`)
+                .setTitle('Server Status Error')
+                .setDescription(error.message || 'An error occurred while checking the server status')
                 .setColor('#ff0000')
                 .setTimestamp();
 
