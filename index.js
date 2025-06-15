@@ -2,7 +2,18 @@ const { Client, GatewayIntentBits, Collection, Events, REST, Routes } = require(
 const fs = require('node:fs');
 const path = require('node:path');
 const express = require('express');
-const { token, clientId, port } = require('./config.json');
+let token, clientId, port;
+
+try {
+  const config = require('./config.json');
+  token = process.env.TOKEN || config.token;
+  clientId = process.env.CLIENT_ID || config.clientId;
+  port = process.env.PORT || config.port || 3000;
+} catch {
+  token = process.env.TOKEN;
+  clientId = process.env.CLIENT_ID;
+  port = process.env.PORT || 3000;
+}
 
 const client = new Client({
   intents: [
