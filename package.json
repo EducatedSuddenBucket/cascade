@@ -9,7 +9,7 @@
   "dependencies": {
     "discord.js": "14.14.1",
     "express": "latest",
-    "axios": "latest",
+    "axios": "latest"
   },
   "author": "EducatedSuddenBucket",
   "license": "MIT"
