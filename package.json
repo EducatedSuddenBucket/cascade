@@ -1,0 +1,15 @@
+{
+  "name": "cascade-bot",
+  "version": "1.0.0",
+  "description": "Cascade - A Discord bot that makes your server more engaged and fun.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "14.14.1",
+    "express": "latest"
+  },
+  "author": "EducatedSuddenBucket",
+  "license": "MIT"
+}
