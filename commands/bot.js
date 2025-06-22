@@ -32,7 +32,7 @@ module.exports = {
       await interaction.editReply({ embeds: [embed] });
 
     } catch (error) {
-      console.error('Error in bot command:', error);
+      console.error('Error :', error);
     }
   },
 };
