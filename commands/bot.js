@@ -8,7 +8,7 @@ module.exports = {
         await interaction.deferReply();
         
         const botPing = Date.now() - interaction.createdTimestamp;
-        const apiPing = Math.round(client.ws.ping);
+        const apiPing = client.ws.ping;
 
         const uptime = process.uptime();
         const days = Math.floor(uptime / 86400);
