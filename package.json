@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Cascade - A Discord bot that makes your server more engaged and fun.",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node index.js"
   },
